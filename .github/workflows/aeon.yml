@@ -480,14 +480,14 @@ jobs:
         if: steps.work.outputs.mode != '' && steps.skill.outputs.name == 'vuln-scanner'
         run: bash scripts/stage-vuln-scanner.sh "${{ steps.skill.outputs.name }}"
 
-      - name: Install Foundry (deploy-uni-hook)
+      - name: Install Foundry (hook deploy skills)
         # The official action installs a cached, pinned Foundry from GitHub
         # releases with retries. The old path (curl https://foundry.paradigm.xyz |
         # bash, inside stage-deploy-uni-hook.sh) got rate-limited on the shared
         # runner IPs and swallowed the failure, so a deploy run went GREEN with no
         # toolchain and silently did nothing. With forge already on PATH here, the
         # stage script's `command -v forge` guard skips its curl fallback entirely.
-        if: steps.work.outputs.mode != '' && steps.skill.outputs.name == 'deploy-uni-hook'
+        if: steps.work.outputs.mode != '' && (steps.skill.outputs.name == 'deploy-uni-hook' || steps.skill.outputs.name == 'deploy-taskmarket-hook')
         uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1
         with:
           version: stable
@@ -502,6 +502,16 @@ jobs:
         # in scripts/skill_mode.sh. Best-effort: self-guards to the skill, never fails.
         if: steps.work.outputs.mode != '' && steps.skill.outputs.name == 'deploy-uni-hook'
         run: bash scripts/stage-deploy-uni-hook.sh "${{ steps.skill.outputs.name }}"
+
+      - name: Stage deploy-taskmarket-hook toolchain
+        # Copies the pre-built TaskMarket Foundry project plus the
+        # secret-expansion-safe ./taskmarket-hook-deploy.sh runner and chain
+        # registry to the repo root. This keeps the burner out of model-authored
+        # command text; the write-mode agent remains part of the trusted boundary.
+        # Foundry is installed by the shared hook-deploy step above; in-run tool
+        # use remains gated by the write-tier grant in scripts/skill_mode.sh.
+        if: steps.work.outputs.mode != '' && steps.skill.outputs.name == 'deploy-taskmarket-hook'
+        run: bash scripts/stage-deploy-taskmarket-hook.sh "${{ steps.skill.outputs.name }}"
 
       - name: Cache remotion toolchain
         # The remotion skill renders MP4s with a bundled Remotion project. Its
@@ -676,13 +686,22 @@ jobs:
           # VERCEL_TOKEN. Model-gateway / GITHUB_TOKEN / GROK / LANGFUSE stay (infra).
           # BEAMR_* removed: no consumer in scripts/ or skills/ (dead ambient binding).
           JSONRENDER_ENABLED: ${{ vars.JSONRENDER_ENABLED || 'true' }}
-          # Mainnet opt-in lock for deploy-uni-hook, read by hook-deploy.sh. A
+          # Mainnet opt-in lock for deploy-uni-hook and deploy-taskmarket-hook,
+          # read by their secret-expansion-safe deploy runners. The runners keep
+          # the burner out of analyzed command text but do not isolate it from the
+          # trusted write-mode agent process. A
           # repo VARIABLE, not a secret: its value is the flag "1", and a secret
           # value of "1" makes GitHub mask every "1" digit across the run log, so
           # tx hashes, addresses, and explorer links print as ***. It gates
           # nothing sensitive on its own (the burner key is the real secret), so a
           # plaintext variable is correct.
           HOOK_MAINNET_OK: ${{ vars.HOOK_MAINNET_OK }}
+          # Raw operator input is an independent one-run arm proof. The deploy
+          # runner refuses broadcast unless this exact workflow value starts arm:.
+          HOOK_REQUEST_VAR: ${{ inputs.var }}
+          # Optional gas-wallet rails shared by both hook deploy runners.
+          MAX_GAS_GWEI: ${{ vars.MAX_GAS_GWEI }}
+          HOOK_MAX_FLOAT_ETH: ${{ vars.HOOK_MAX_FLOAT_ETH }}
           SKILL_VAR: ${{ inputs.var }}
           SKILL_NAME: ${{ steps.skill.outputs.name }}
           INPUT_MODEL: ${{ inputs.model }}

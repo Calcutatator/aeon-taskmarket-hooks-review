@@ -1,0 +1,20 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+always_use_create_2_factory = true
+
+[rpc_endpoints]
+base = "${FORGE_BASE_RPC_URL}"
+base_sepolia = "${FORGE_BASE_SEPOLIA_RPC_URL}"
+
+[etherscan]
+base = { key = "${FORGE_ETHERSCAN_API_KEY}", chain = 8453, url = "https://api.etherscan.io/v2/api?chainid=8453" }
+base_sepolia = { key = "${FORGE_ETHERSCAN_API_KEY}", chain = 84532, url = "https://api.etherscan.io/v2/api?chainid=84532" }

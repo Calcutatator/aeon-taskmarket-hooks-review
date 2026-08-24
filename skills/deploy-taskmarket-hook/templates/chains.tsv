@@ -1,0 +1,6 @@
+# TaskMarket hook targets. Columns are TAB-separated:
+# name  chainId  testnet  TaskMarketDiamond  expectedDiamondRuntimeCodehash  rpc  explorer  alchemySlug
+# The Diamond addresses are the live revision-20 deployments. The proxy runtime codehash
+# is checked before every rehearsal or broadcast; a mismatch fails closed.
+base	8453	false	0xDDc6cC3e4D11c1f3527B867C7DAD4ED9869C33f7	0x04304a177e7ca8d5bf728ec3a4ae834f3af28925140c6613ee6cfb4574d1b75d	https://mainnet.base.org	https://basescan.org	base-mainnet
+base-sepolia	84532	true	0x0A24E9c3b9E31B8258329e187470ACc16497Cec7	0x04304a177e7ca8d5bf728ec3a4ae834f3af28925140c6613ee6cfb4574d1b75d	https://sepolia.base.org	https://sepolia.basescan.org	base-sepolia

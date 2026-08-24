@@ -1,0 +1,4 @@
+@taskmarket/contracts/=lib/taskmarket-contracts/
+@openzeppelin/=lib/openzeppelin-contracts/
+openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/
+forge-std/=lib/forge-std/src/

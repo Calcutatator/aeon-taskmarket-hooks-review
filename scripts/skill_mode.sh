@@ -85,11 +85,13 @@ WRITE_TOOLS="$WRITE_TOOLS,Bash(semgrep:*),Bash(osv-scanner:*),Bash(trufflehog:*)
 # reaches for it when the clone already ships fuzz/fuzz_targets; the guard lives
 # in the skill, not here.
 WRITE_TOOLS="$WRITE_TOOLS,Bash(cargo:*)"
-# Foundry bare-names + the key-safe runner for deploy-uni-hook. Foundry is staged by
-# scripts/stage-deploy-uni-hook.sh (the sandbox denies in-run installs); the skill then
-# builds/simulates/broadcasts by bare name. `./hook-deploy.sh` hides the deployer key
-# from the command line (secretcurl pattern). Without this grant the invocation is denied.
-WRITE_TOOLS="$WRITE_TOOLS,Bash(forge:*),Bash(cast:*),Bash(./hook-deploy.sh:*)"
+# Foundry bare-names + the secret-expansion-safe runners for the hook deploy skills.
+# Foundry and each project are staged by their workflow scripts (the sandbox denies
+# in-run installs); the skills then build/simulate/broadcast by bare name. The runners
+# hide the deployer key from model-authored command text (secretcurl pattern); they do
+# not isolate it from the trusted write-mode agent process. Without these grants the
+# invocations are denied.
+WRITE_TOOLS="$WRITE_TOOLS,Bash(forge:*),Bash(cast:*),Bash(./hook-deploy.sh:*),Bash(./taskmarket-hook-deploy.sh:*)"
 
 resolve_mode() {
   # `mode:` frontmatter scalar via the shared _fm reader (strips inline comment,
