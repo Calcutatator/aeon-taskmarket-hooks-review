@@ -196,7 +196,7 @@ jobs:
 
       - name: Setup Node.js
         if: steps.work.outputs.mode != ''
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '22'
 
@@ -488,7 +488,7 @@ jobs:
         # toolchain and silently did nothing. With forge already on PATH here, the
         # stage script's `command -v forge` guard skips its curl fallback entirely.
         if: steps.work.outputs.mode != '' && (steps.skill.outputs.name == 'deploy-uni-hook' || steps.skill.outputs.name == 'deploy-taskmarket-hook')
-        uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1
+        uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
         with:
           version: stable
 
@@ -1081,7 +1081,7 @@ jobs:
       # even if the run failed; the host list is the allowlist oracle P3 builds from.
       - name: Upload egress audit log
         if: always() && vars.EGRESS_AUDIT == '1'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: egress-${{ steps.skill.outputs.name }}-${{ github.run_id }}
           path: ${{ runner.temp }}/iron/audit.jsonl
@@ -2054,7 +2054,7 @@ jobs:
 
       - name: Upload audit log
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: audit-log-${{ github.run_id }}
           path: audit-artifact/audit.jsonl
